@@ -15,8 +15,10 @@ export default function LoginPage() {
 
   const handleGoogleAuth = async () => {
     try {
+      console.log("Google auth button clicked");
       await signInWithGoogle();
     } catch (error) {
+      console.error("Google auth error:", error);
       toast({
         title: "Authentication Failed",
         description: "Failed to authenticate with Google. Please try again.",

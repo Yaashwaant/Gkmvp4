@@ -89,20 +89,26 @@ function AppContent() {
 
   // Not authenticated
   if (!firebaseUser) {
+    console.log("No Firebase user, showing LoginPage");
     return <LoginPage />;
   }
 
   // Authenticated but not onboarded
   if (firebaseUser && !dbUser) {
+    console.log("Firebase user exists but no DB user, showing onboarding");
     return (
       <OnboardingPage 
         user={firebaseUser} 
-        onComplete={() => setLocation("/dashboard")} 
+        onComplete={() => {
+          console.log("Onboarding completed, redirecting to dashboard");
+          setLocation("/dashboard");
+        }} 
       />
     );
   }
 
   // Authenticated and onboarded
+  console.log("User authenticated and onboarded, showing main app");
   const showBottomNav = ["/dashboard", "/upload", "/wallet", "/history"].includes(location);
 
   return (
