@@ -25,14 +25,20 @@ function AppContent() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("Auth state changed:", user?.email || "No user");
       if (user) {
+        console.log("Firebase user authenticated:", user.email);
         setFirebaseUser(user);
       } else {
+        console.log("No Firebase user, checking redirect result");
         // Check for redirect result
         try {
           const result = await handleRedirectResult();
           if (result) {
+            console.log("Redirect result found:", result.email);
             setFirebaseUser(result);
+          } else {
+            console.log("No redirect result");
           }
         } catch (error) {
           console.error("Redirect handling error:", error);
@@ -48,14 +54,19 @@ function AppContent() {
     queryKey: ["/api/user", firebaseUser?.email],
     enabled: !!firebaseUser?.email,
     queryFn: async () => {
+      console.log("Fetching user from DB for:", firebaseUser.email);
       const response = await fetch(`/api/user/${firebaseUser.email}`);
+      console.log("User fetch response status:", response.status);
       if (response.status === 404) {
+        console.log("User not found in DB, showing onboarding");
         return null; // User not found in DB
       }
       if (!response.ok) {
         throw new Error("Failed to fetch user");
       }
-      return response.json();
+      const user = await response.json();
+      console.log("User found in DB:", user);
+      return user;
     },
   });
 

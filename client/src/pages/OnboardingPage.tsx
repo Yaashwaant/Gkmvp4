@@ -29,13 +29,17 @@ export default function OnboardingPage({ user, onComplete }: OnboardingPageProps
 
   const createUserMutation = useMutation({
     mutationFn: async (data: OnboardingData) => {
+      console.log("Creating user with data:", { ...data, email: user.email });
       const response = await apiRequest("POST", "/api/user", {
         ...data,
         email: user.email,
       });
-      return response.json();
+      const result = await response.json();
+      console.log("User creation response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("User created successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Profile Created",
@@ -44,6 +48,7 @@ export default function OnboardingPage({ user, onComplete }: OnboardingPageProps
       onComplete();
     },
     onError: (error: any) => {
+      console.error("User creation error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to create profile",
