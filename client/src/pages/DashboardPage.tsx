@@ -25,24 +25,24 @@ export default function DashboardPage({ user, onNavigate }: DashboardPageProps) 
       <div className="bg-gradient-to-r from-green-primary to-green-dark p-6 text-white">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl font-semibold">Welcome, {user?.name} 👋</h1>
-            <p className="text-green-100">Keep driving green!</p>
+            <h1 className="text-xl font-semibold text-white">Welcome, {user?.name} 👋</h1>
+            <p className="text-white text-opacity-80">Keep driving green!</p>
           </div>
-          <button className="bg-white bg-opacity-20 p-2 rounded-full">
+          <button className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition-all">
             <i className="fas fa-bell text-white"></i>
           </button>
         </div>
         
         {/* Wallet Card */}
-        <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-4">
+        <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl p-5 border border-white border-opacity-30 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm">Carbon Credits</p>
-              <p className="text-2xl font-bold">{user?.carbonCredits || "0.000"} CC</p>
+              <p className="text-white text-opacity-95 text-sm font-semibold tracking-wide">Carbon Credits</p>
+              <p className="text-2xl font-bold text-white drop-shadow-sm">{user?.carbonCredits || "0.000"} CC</p>
             </div>
             <div className="text-right">
-              <p className="text-green-100 text-sm">Balance</p>
-              <p className="text-2xl font-bold">₹{user?.balanceINR || "0"}</p>
+              <p className="text-white text-opacity-95 text-sm font-semibold tracking-wide">Balance</p>
+              <p className="text-2xl font-bold text-white drop-shadow-sm">₹{user?.balanceINR || "0"}</p>
             </div>
           </div>
         </div>
