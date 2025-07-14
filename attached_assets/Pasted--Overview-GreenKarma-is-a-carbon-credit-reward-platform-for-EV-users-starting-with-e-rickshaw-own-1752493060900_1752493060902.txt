@@ -1,0 +1,162 @@
+💡 Overview
+GreenKarma is a carbon credit reward platform for EV users (starting with e-rickshaw owners). The app tracks the kilometers traveled using odometer images, estimates carbon savings using the Verna formula, and converts it into wallet credits. Inspired by the Slice app UI, it uses a clean green theme and rounded card-based interface.
+
+🔧 Tech Stack
+Layer	Tech Used
+Frontend	React.js + Tailwind CSS
+Backend	Node.js + Express
+Database	MongoDB + GridFS
+Auth	Google OAuth (Firebase or OAuth2)
+Image Store	GridFS (MongoDB)
+OCR (Future)	Mock or Placeholder
+
+🧠 User Flow
+Login Page
+
+Google Sign-in using Firebase Auth
+
+If new user → show form to capture:
+
+Name
+
+Vehicle Type (dropdown: E-Rickshaw, EV Bike, EV Car)
+
+Optional: Upload RC Book Image
+
+Save user data to MongoDB (Users collection)
+
+Dashboard
+
+Show welcome message: "Welcome, [Name] 👋"
+
+Wallet:
+
+Credits (e.g. 0.012 CC)
+
+₹ balance (e.g. ₹18)
+
+Upload status (last image date + reward)
+
+Next reward milestone tracker
+
+Buttons:
+
+📸 “Upload Odometer Photo”
+
+💵 “Withdraw Credits”
+
+Upload Screen
+
+Allow only image upload (no manual input)
+
+On upload:
+
+Store image in GridFS
+
+Extract estimated km from filename (mock for MVP)
+
+Use stored vehicle type to fetch emission factor
+
+Apply Verna Formula
+
+Save result to Uploads collection
+
+Withdraw Page
+
+Show current balance in ₹ and credits
+
+Withdraw button (mocked – shows confirmation alert)
+
+History Page (Optional MVP+)
+
+List of all past uploads:
+
+Date, estimated KM, carbon saved, reward, image thumbnail
+
+🧮 Verna Formula for Reward Calculation
+js
+Copy
+Edit
+// Emission Factors (India standard)
+const emissionFactors = {
+  "E-Rickshaw": 0.05,
+  "EV Bike": 0.06,
+  "EV Car": 0.12
+};
+
+// Verna Formula
+carbonSaved = kmDriven * emissionFactors[vehicleType]; // in kg
+carbonCredits = carbonSaved / 1000;                    // 1 credit = 1000 kg
+rewardINR = carbonCredits * 1500;                      // ₹1500/credit
+🧾 MongoDB Collections
+1. Users
+json
+Copy
+Edit
+{
+  "_id": "ObjectId",
+  "name": "Yashwant Bhise",
+  "email": "user@gmail.com",
+  "vehicleType": "EV Car",
+  "rcImageId": "GridFS file ID (optional)",
+  "wallet": {
+    "carbonCredits": 0.012,
+    "balanceINR": 18
+  },
+  "createdAt": "timestamp"
+}
+2. Uploads
+json
+Copy
+Edit
+{
+  "_id": "ObjectId",
+  "userId": "reference to Users._id",
+  "imageId": "GridFS file ID",
+  "estimatedKm": 100,
+  "carbonSavedKg": 12,
+  "carbonCredits": 0.012,
+  "rewardINR": 18,
+  "date": "timestamp"
+}
+🎨 Frontend UI – Inspired by Slice App
+Key Styles:
+Tailwind CSS
+
+Rounded cards and buttons
+
+Shadows for depth
+
+Green palette: #38B000, #E6F5D0
+
+Mobile-first responsive layout
+
+Bottom navigation (Home | Upload | Wallet | History)
+
+🗂️ Folder Structure (Recommended)
+bash
+Copy
+Edit
+/greenkarma
+├── frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   └── index.js
+│   └── tailwind.config.js
+├── backend
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/vernaCalculator.js
+│   ├── server.js
+│   └── config/db.js
+├── .env
+├── package.json
+└── README.md
+🔗 Replit Prompt (Full)
+Paste this into Replit AI or instruct your dev team to build the full-stack MVP
+
+"Build a full-stack MVP app called GreenKarma that rewards EV users with carbon credits. The frontend is in React.js with Tailwind CSS and mimics the Slice app design (green theme, card UI, bottom nav). Users log in with Google, upload odometer photos (no manual km input), and receive wallet credits using the Verna formula: CarbonSaved = km × emission factor, Credits = CarbonSaved/1000, ₹ = Credits × 1500. Store user and upload data in MongoDB, and save images using GridFS. Include a dashboard showing wallet, upload history, and a progress tracker to the next milestone. No OCR is needed for MVP – use a mock value for KM. The backend is built in Node.js + Express, using JWT or Firebase Auth, with models for User and Uploads."
