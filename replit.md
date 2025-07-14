@@ -21,8 +21,8 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
-- **File Storage**: In-memory storage (development) with multer for image uploads
+- **Database**: PostgreSQL with Drizzle ORM (DatabaseStorage implementation)
+- **File Storage**: Database-backed storage with multer for image uploads
 - **API Design**: RESTful endpoints with proper error handling
 
 ### Mobile-First Design
