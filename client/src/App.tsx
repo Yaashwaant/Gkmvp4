@@ -1,0 +1,136 @@
+import { Switch, Route, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./lib/firebase";
+import { handleRedirectResult } from "./lib/auth";
+import { useQuery } from "@tanstack/react-query";
+
+import LoginPage from "./pages/LoginPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import DashboardPage from "./pages/DashboardPage";
+import UploadPage from "./pages/UploadPage";
+import WalletPage from "./pages/WalletPage";
+import HistoryPage from "./pages/HistoryPage";
+import BottomNavigation from "./components/BottomNavigation";
+import NotFound from "@/pages/not-found";
+
+function AppContent() {
+  const [location, setLocation] = useLocation();
+  const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setFirebaseUser(user);
+      } else {
+        // Check for redirect result
+        try {
+          const result = await handleRedirectResult();
+          if (result) {
+            setFirebaseUser(result);
+          }
+        } catch (error) {
+          console.error("Redirect handling error:", error);
+        }
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const { data: dbUser, isLoading: isUserLoading } = useQuery({
+    queryKey: ["/api/user", firebaseUser?.email],
+    enabled: !!firebaseUser?.email,
+    queryFn: async () => {
+      const response = await fetch(`/api/user/${firebaseUser.email}`);
+      if (response.status === 404) {
+        return null; // User not found in DB
+      }
+      if (!response.ok) {
+        throw new Error("Failed to fetch user");
+      }
+      return response.json();
+    },
+  });
+
+  const handleNavigation = (path: string) => {
+    setLocation(path);
+  };
+
+  if (loading || isUserLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-green-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <i className="fas fa-leaf text-white text-2xl animate-pulse"></i>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not authenticated
+  if (!firebaseUser) {
+    return <LoginPage />;
+  }
+
+  // Authenticated but not onboarded
+  if (firebaseUser && !dbUser) {
+    return (
+      <OnboardingPage 
+        user={firebaseUser} 
+        onComplete={() => setLocation("/dashboard")} 
+      />
+    );
+  }
+
+  // Authenticated and onboarded
+  const showBottomNav = ["/dashboard", "/upload", "/wallet", "/history"].includes(location);
+
+  return (
+    <div className="max-w-md mx-auto bg-white shadow-lg min-h-screen relative">
+      <Switch>
+        <Route path="/dashboard">
+          <DashboardPage user={dbUser} onNavigate={handleNavigation} />
+        </Route>
+        <Route path="/upload">
+          <UploadPage user={dbUser} onBack={() => setLocation("/dashboard")} />
+        </Route>
+        <Route path="/wallet">
+          <WalletPage user={dbUser} onBack={() => setLocation("/dashboard")} />
+        </Route>
+        <Route path="/history">
+          <HistoryPage user={dbUser} onBack={() => setLocation("/dashboard")} />
+        </Route>
+        <Route path="/">
+          <DashboardPage user={dbUser} onNavigate={handleNavigation} />
+        </Route>
+        <Route component={NotFound} />
+      </Switch>
+      
+      {showBottomNav && (
+        <BottomNavigation onNavigate={handleNavigation} />
+      )}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <AppContent />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
