@@ -51,8 +51,10 @@ export async function signInWithEmail(email: string, password: string) {
 
 export async function handleRedirectResult() {
   try {
+    console.log("Checking for redirect result...");
     const result = await getRedirectResult(auth);
     if (result) {
+      console.log("Redirect result found:", result.user.email);
       const user = result.user;
       return {
         email: user.email,
@@ -60,6 +62,7 @@ export async function handleRedirectResult() {
         photoURL: user.photoURL,
       };
     }
+    console.log("No redirect result found");
     return null;
   } catch (error) {
     console.error("Error handling redirect result:", error);
