@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/firebase";
-import { handleRedirectResult } from "./lib/auth";
+// Remove redirect result import for popup auth
 import { useQuery } from "@tanstack/react-query";
 
 import LoginPage from "./pages/LoginPage";
@@ -30,19 +30,8 @@ function AppContent() {
         console.log("Firebase user authenticated:", user.email);
         setFirebaseUser(user);
       } else {
-        console.log("No Firebase user, checking redirect result");
-        // Check for redirect result
-        try {
-          const result = await handleRedirectResult();
-          if (result) {
-            console.log("Redirect result found:", result.email);
-            setFirebaseUser(result);
-          } else {
-            console.log("No redirect result");
-          }
-        } catch (error) {
-          console.error("Redirect handling error:", error);
-        }
+        console.log("No Firebase user found");
+        setFirebaseUser(null);
       }
       setLoading(false);
     });

@@ -1,7 +1,6 @@
 import { 
   getAuth, 
-  signInWithRedirect, 
-  getRedirectResult, 
+  signInWithPopup, 
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
   createUserWithEmailAndPassword,
@@ -14,9 +13,10 @@ const provider = new GoogleAuthProvider();
 
 export async function signInWithGoogle() {
   try {
-    console.log("Starting Google sign-in with redirect...");
-    await signInWithRedirect(auth, provider);
-    console.log("Google sign-in redirect initiated");
+    console.log("Starting Google sign-in with popup...");
+    const result = await signInWithPopup(auth, provider);
+    console.log("Google sign-in successful:", result.user.email);
+    return result.user;
   } catch (error) {
     console.error("Error signing in with Google:", error);
     throw error;
@@ -49,25 +49,9 @@ export async function signInWithEmail(email: string, password: string) {
   }
 }
 
+// No longer needed with popup auth
 export async function handleRedirectResult() {
-  try {
-    console.log("Checking for redirect result...");
-    const result = await getRedirectResult(auth);
-    if (result) {
-      console.log("Redirect result found:", result.user.email);
-      const user = result.user;
-      return {
-        email: user.email,
-        name: user.displayName,
-        photoURL: user.photoURL,
-      };
-    }
-    console.log("No redirect result found");
-    return null;
-  } catch (error) {
-    console.error("Error handling redirect result:", error);
-    throw error;
-  }
+  return null;
 }
 
 export async function signOut() {
