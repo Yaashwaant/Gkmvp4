@@ -35,9 +35,11 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication System
 - Google OAuth integration via Firebase
+- Email/password authentication with Firebase
 - Redirect-based authentication flow
 - Session management with protected routes
 - User onboarding flow for new users
+- Toggle between sign-in and sign-up modes
 
 ### Data Models
 - **Users**: Profile information, vehicle type, carbon credits, balance
