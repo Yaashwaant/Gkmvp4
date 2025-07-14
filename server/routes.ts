@@ -63,6 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(user);
     } catch (error) {
+      console.error("Error fetching user:", error);
       res.status(500).json({ error: "Failed to fetch user" });
     }
   });
@@ -94,6 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: "Invalid user data", details: error.errors });
       }
+      console.error("Error creating user:", error);
       res.status(500).json({ error: "Failed to create user" });
     }
   });

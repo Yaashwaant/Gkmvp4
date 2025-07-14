@@ -42,9 +42,9 @@ function AppContent() {
   const { data: dbUser, isLoading: isUserLoading } = useQuery({
     queryKey: ["/api/user", firebaseUser?.email],
     enabled: !!firebaseUser?.email,
-    queryFn: async () => {
+      queryFn: async () => {
       console.log("Fetching user from DB for:", firebaseUser.email);
-      const response = await fetch(`/api/user/${firebaseUser.email}`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user/${firebaseUser.email}`);
       console.log("User fetch response status:", response.status);
       if (response.status === 404) {
         console.log("User not found in DB, showing onboarding");
