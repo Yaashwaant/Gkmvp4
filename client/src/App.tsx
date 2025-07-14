@@ -39,7 +39,7 @@ function AppContent() {
     return () => unsubscribe();
   }, []);
 
-  const { data: dbUser, isLoading: isUserLoading } = useQuery({
+  const { data: dbUser, isLoading: isUserLoading, refetch: refetchUser } = useQuery({
     queryKey: ["/api/user", firebaseUser?.email],
     enabled: !!firebaseUser?.email,
       queryFn: async () => {
@@ -88,8 +88,9 @@ function AppContent() {
     return (
       <OnboardingPage 
         user={firebaseUser} 
-        onComplete={() => {
-          console.log("Onboarding completed, redirecting to dashboard");
+        onComplete={async () => {
+          console.log("Onboarding completed, refetching user and redirecting to dashboard");
+          await refetchUser();
           setLocation("/dashboard");
         }} 
       />
