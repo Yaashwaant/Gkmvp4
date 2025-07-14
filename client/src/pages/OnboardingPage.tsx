@@ -47,13 +47,23 @@ export default function OnboardingPage({ user, onComplete }: OnboardingPageProps
       });
       onComplete();
     },
-    onError: (error: any) => {
+    onError: async (error: any) => {
       console.error("User creation error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create profile",
-        variant: "destructive",
-      });
+      // Check if error is 409 User already exists
+      if (error?.status === 409 || (error?.message && error.message.includes("User already exists"))) {
+        toast({
+          title: "User Exists",
+          description: "User already exists. Redirecting to your profile.",
+          variant: "default",
+        });
+        onComplete();
+      } else {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to create profile",
+          variant: "destructive",
+        });
+      }
     },
   });
 
